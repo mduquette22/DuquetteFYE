@@ -38,15 +38,24 @@ head(variants)
 #### I don't need columns 7 and 8 because they do not contain data so I will create a dataframe and then subset columns 1-6
 
 ```{r}
+# -c(7,8) removes columns 7 and 8 from the datafram created in the first line
 df <- data.frame(variants)
 df_subset <- df[, -c(7,8)]
 head(df_subset)
 ```
 
+#### The "Total" data is not useful since it will always be 100%. So I will filter it out of my dataset.
+
+```{r}
+# filtering the subset dataframe so that rows with variant_name != "Total" are removed
+df_nototal <- filter(df_subset, variant_name != "Total")
+```
+
 #### Now let's try graphing something!
 
 ```{r}
-ggplot(data=df_subset) + 
+# setting x axis to date column and y axis equal to percentage column
+ggplot(data=df_nototal) + 
   aes(x=date, y=percentage) + 
   geom_line()
 ```
@@ -54,7 +63,8 @@ ggplot(data=df_subset) +
 #### Not much to see there... Let's try changing some colors by the variant strain type
 
 ```{r}
-ggplot(data=df_subset) + 
+# use col=variant_name to color the lines by variant strain
+ggplot(data=df_nototal) + 
   aes(x=date, y=percentage, col=variant_name) + 
   geom_line()
 ```
@@ -62,7 +72,8 @@ ggplot(data=df_subset) +
 #### Much better! Let's add labels.
 
 ```{r}
-ggplot(data=df_subset) + 
+# adding labels with labs() and then using xlab("") to remove the unnecessary label on the x-axis because it is redundant
+ggplot(data=df_nototal) + 
   aes(x=date, y=percentage, col=variant_name) + 
   geom_line() + 
   labs(y="Percentage of sequenced specimens", color="Variant Name") + 
@@ -72,7 +83,8 @@ ggplot(data=df_subset) +
 #### We will now add some granularity to the x-axis by scaling by month instead of by year.
 
 ```{r}
-ggplot(data=df_subset) + 
+# using scale_x_date() to change the x axis ticks
+ggplot(data=df_nototal) + 
   aes(x=date, y=percentage, col=variant_name) + geom_line() + 
   labs(y="Percentage of sequenced specimens", color="Variant Name") + 
   xlab("") + 
@@ -82,7 +94,8 @@ ggplot(data=df_subset) +
 #### Well, that's definitely not readable. Let's try angling the labels!
 
 ```{r}
-ggplot(data=df_subset) + 
+# using theme() to change the x axis text to be at a 45 degree angle and in line with the ticks
+ggplot(data=df_nototal) + 
   aes(x=date, y=percentage, col=variant_name) + 
   geom_line() + 
   labs(y="Percentage of sequenced specimens", color="Variant Name") + 
