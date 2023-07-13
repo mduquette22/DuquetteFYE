@@ -1,0 +1,94 @@
+---
+title: "Bioinformatics FYE"
+author: "Madeleine Duquette (A59019542)"
+format:
+  pdf:
+    geometry: margin=.25in
+---
+
+## COVID-19 Variants Plot
+
+#### Install and load ggplot2, lubridate, and dplyr. Will also need to load readr.
+
+```         
+# install.packages("ggplot2")
+# install.packages("lubridate")
+# install.packages("dplyr")
+```
+
+```{r}
+library(ggplot2)
+library(lubridate)
+library(dplyr)
+library(readr)
+```
+
+#### Read in the csv file
+
+```{r}
+variants <- read_csv("covid19_variants.csv")
+```
+
+#### Check out what's in there
+
+```{r}
+head(variants)
+```
+
+#### I don't need columns 7 and 8 because they do not contain data so I will create a dataframe and then subset columns 1-6
+
+```{r}
+df <- data.frame(variants)
+df_subset <- df[, -c(7,8)]
+head(df_subset)
+```
+
+#### Now let's try graphing something!
+
+```{r}
+ggplot(data=df_subset) + 
+  aes(x=date, y=percentage) + 
+  geom_line()
+```
+
+#### Not much to see there... Let's try changing some colors by the variant strain type
+
+```{r}
+ggplot(data=df_subset) + 
+  aes(x=date, y=percentage, col=variant_name) + 
+  geom_line()
+```
+
+#### Much better! Let's add labels.
+
+```{r}
+ggplot(data=df_subset) + 
+  aes(x=date, y=percentage, col=variant_name) + 
+  geom_line() + 
+  labs(y="Percentage of sequenced specimens", color="Variant Name") + 
+  xlab("")
+```
+
+#### We will now add some granularity to the x-axis by scaling by month instead of by year.
+
+```{r}
+ggplot(data=df_subset) + 
+  aes(x=date, y=percentage, col=variant_name) + geom_line() + 
+  labs(y="Percentage of sequenced specimens", color="Variant Name") + 
+  xlab("") + 
+  scale_x_date(date_labels="%b %Y", date_breaks="1 month")
+```
+
+#### Well, that's definitely not readable. Let's try angling the labels!
+
+```{r}
+ggplot(data=df_subset) + 
+  aes(x=date, y=percentage, col=variant_name) + 
+  geom_line() + 
+  labs(y="Percentage of sequenced specimens", color="Variant Name") + 
+  xlab("") + 
+  scale_x_date(date_labels="%b %Y", date_breaks="1 month") + 
+  theme(axis.text.x=element_text(angle=45, hjust=1))
+```
+
+# Yay! 
